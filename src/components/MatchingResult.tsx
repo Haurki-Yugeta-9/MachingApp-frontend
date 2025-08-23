@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Building, MapPin, DollarSign, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // JobOpening 型の定義（dashboard.tsx と共通）
 interface JobOpening {
@@ -28,6 +29,8 @@ interface Props {
 }
 
 const MatchingJobList: React.FC<Props> = ({ matchedJobs }) => {
+    const router = useRouter();
+    
     return (
         <div className="mt-8">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -40,7 +43,7 @@ const MatchingJobList: React.FC<Props> = ({ matchedJobs }) => {
                     <div 
                         key={job.id}
                         className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 cursor-pointer hover:shadow-md transition"
-                        onClick={() => alert(`${job.company.name} との詳細を表示する機能は開発中です`)}
+                        onClick={() => router.push(`/?view=chat&jobId=${job.id}`)}
                     >
                         {/* 求人ヘッダー */}
                         <div className="flex justify-between items-start mb-4">

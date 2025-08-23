@@ -1,9 +1,9 @@
 // typesのインポートをしやすくするために集約
 
 export * from './seekers'
+export * from './chats';
 // export * from './common';
 // export * from './auth';
-// export * from './chat';
 // export * from './ocr';
 
 
