@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-/* Tailwind のベース, コンポーネント, ユーティリティを読み込み */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* すべてのページに適用される共通スタイル */
 html,
 body {
