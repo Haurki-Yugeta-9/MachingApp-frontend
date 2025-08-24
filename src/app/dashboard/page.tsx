@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Chat from './chat';
+import Dashboard from './dashboard';
 
-export default function ChatPage() {
+export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -17,10 +17,5 @@ export default function ChatPage() {
     }
   }, [router]);
 
-  // ダッシュボードに戻る関数
-  const handleBackToDashboard = () => {
-    router.push("/dashboard");
-  };
-
-  return <Chat onBackToDashboard={handleBackToDashboard} />;
+  return <Dashboard />;
 }

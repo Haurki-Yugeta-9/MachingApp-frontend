@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FileText } from "lucide-react";
+import { FileText, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-// 修正されたコンポーネントをインポート
+// コンポーネントのインポート
 import JobSeekerPanel from '@/components/JobSeekerSelect';
 import MatchingControls from '@/components/MatchingControl';
 import MatchingJobList from '@/components/MatchingResult';
@@ -34,6 +35,7 @@ interface ExtractedInfo {
 }
 
 const Dashboard = () => {
+    const router = useRouter();
     const [jobSeekers, setJobSeekers] = useState<JobSeeker[]>([]);
     const [selectedJobSeeker, setSelectedJobSeeker] = useState<string>('');
     const [selectedJobSeekerData, setSelectedJobSeekerData] = useState<JobSeeker | null>(null);
@@ -253,41 +255,58 @@ const Dashboard = () => {
         setSelectedJobSeekerData(null);
         setSearchTerm('');
         setAnalysisComplete(false);
-        setChatHistory([]);
-        setChatMessage('');
         setProcessingStatus({ status: 'pending' });
         setExtractedInfo(null);
         setMatchedJobs([]);
     };
 
+    // ログアウト処理
+    const handleLogout = () => {
+        router.push('/logout');
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* サイドバー */}
-            <div className="w-80 bg-white shadow-lg p-6">
-                {/* ヘッダー */}
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">BizReach</h1>
-                    <p className="text-gray-600">マッチング支援システム</p>
+            <div className="w-80 bg-white shadow-lg flex flex-col">
+                {/* サイドバーの上部コンテンツ */}
+                <div className="flex-1 p-6">
+                    {/* ヘッダー */}
+                    <div className="mb-8">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-2">BizReach</h1>
+                        <p className="text-gray-600">マッチング支援システム</p>
+                    </div>
+
+                    {/* 求職者選択 */}
+                    <JobSeekerPanel 
+                        jobSeekers={jobSeekers}
+                        selectedJobSeeker={selectedJobSeeker}
+                        setSelectedJobSeeker={handleJobSeekerChange}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        onModalSuccess={handleModalSuccess}
+                    />
+
+                    {/* マッチング制御 */}
+                    <MatchingControls 
+                        isAnalyzing={isAnalyzing}
+                        selectedJobSeeker={selectedJobSeeker}
+                        processingStatus={processingStatus}
+                        onStartMatching={handleStartMatching}
+                        onReset={handleReset}
+                    />
                 </div>
 
-                {/* 求職者選択 */}
-                <JobSeekerPanel 
-                    jobSeekers={jobSeekers}
-                    selectedJobSeeker={selectedJobSeeker}
-                    setSelectedJobSeeker={handleJobSeekerChange}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    onModalSuccess={handleModalSuccess}
-                />
-
-                {/* マッチング制御 */}
-                <MatchingControls 
-                    isAnalyzing={isAnalyzing}
-                    selectedJobSeeker={selectedJobSeeker}
-                    processingStatus={processingStatus}
-                    onStartMatching={handleStartMatching}
-                    onReset={handleReset}
-                />
+                {/* ログアウトボタン（最下端に固定） */}
+                <div className="p-6 border-t border-gray-200">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center px-4 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                    >
+                        <LogOut size={20} className="mr-2" />
+                        ログアウト
+                    </button>
+                </div>
             </div>
             
             {/* メインコンテンツ */}

@@ -1,31 +1,30 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
-import Dashboard from "./dashboard/dashboard";
-import Chat from "./chat/chat";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-function AppContent() {
-  const searchParams = useSearchParams();
+export default function HomePage() {
   const router = useRouter();
-  const view = searchParams.get('view');
-  const jobId = searchParams.get('jobId');
 
-  if (view === 'chat') {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Chat onBackToDashboard={() => router.push('/')} />
-      </div>
-    );
-  }
+  useEffect(() => {
+    // 初回アクセス時にログイン状態をチェック
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    
+    if (isLoggedIn === "true") {
+      // ログイン済みの場合はダッシュボードへ
+      router.replace("/dashboard");
+    } else {
+      // 未ログインの場合はログインページへ
+      router.replace("/login");
+    }
+  }, [router]);
 
-  return <Dashboard />;
-}
-
-export default function Home() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AppContent />
-    </Suspense>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p className="text-gray-600">リダイレクト中...</p>
+      </div>
+    </div>
   );
 }
