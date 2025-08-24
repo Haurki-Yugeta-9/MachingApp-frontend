@@ -1,12 +1,12 @@
 'use client'; // 'use client'を追加(yuge)
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type LoginProps = {
     onLoginSuccess?: () => void;  // ページ遷移のため追加（yuge）
 };
 
-export default function Login({ onLoginSuccess }: LoginProps) {     // props追加（yuge）
+export default function Login({ onLoginSuccess }: LoginProps) {  //ページ遷移用に追加(yuge)
   const [empId, setEmpId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -41,15 +41,10 @@ export default function Login({ onLoginSuccess }: LoginProps) {     // props追�
 
     const data = await res.json();
     localStorage.setItem("token", data.access_token);
-    localStorage.setItem("isLoggedIn", "true"); // ログイン状態を保存
 
-    // ログイン成功時の処理
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    } else {
-      // デフォルトでダッシュボードに遷移
-      window.location.href = "/dashboard";
-    }
+    alert("ログイン成功！");
+    // リダイレクトはマイページが未定なのでポップアップのみ
+    //マイページへの遷移は、書いておりません。
   };
 
     return (
