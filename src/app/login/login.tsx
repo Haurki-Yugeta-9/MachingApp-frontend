@@ -104,7 +104,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {     // propsè¿½å
         </div>
       )}
 
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">.
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <form onSubmit={handleSubmit}>
 
 
