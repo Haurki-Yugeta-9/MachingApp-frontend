@@ -1,6 +1,7 @@
 'use client'; // 'use client'を追加(yuge)
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { validateDevAuth, logDevAccounts, isDevelopmentMode } from "@/lib/dev-auth";
 
 type LoginProps = {
     onLoginSuccess?: () => void;  // ページ遷移のため追加（yuge）
@@ -11,6 +12,13 @@ export default function Login({ onLoginSuccess }: LoginProps) {     // props追�
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // 開発環境でのテストアカウント情報を表示
+  useEffect(() => {
+    if (isDevelopmentMode()) {
+      logDevAccounts();
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -20,35 +28,62 @@ export default function Login({ onLoginSuccess }: LoginProps) {     // props追�
       return;
     }
 
+    // 開発環境での簡易認証チェック
+    // TODO: 本番環境ではここから下を削除すること
+    if (isDevelopmentMode()) {
+      const devAuthResult = validateDevAuth(empId, password);
+      if (devAuthResult) {
+        console.log("🔓 開発用認証成功:", devAuthResult.user);
+        localStorage.setItem("token", devAuthResult.access_token);
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userInfo", JSON.stringify(devAuthResult.user));
+
+        // ログイン成功時の処理
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        } else {
+          window.location.href = "/dashboard";
+        }
+        return;
+      }
+    }
+
+    // ここから上までを削除
+    // 本番環境用のパスワードバリデーション
     if (!/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/.test(password)) {
       setError("パスワードは半角英数8文字以上、英字・数字を各1文字以上含む必要があります");
       return;
     }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        username: empId,
-        password: password,
-      }),
-    });
+    // 本番環境用のAPI認証
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: empId,
+          password: password,
+        }),
+      });
 
-    if (!res.ok) {
-      setError("社員番号またはパスワードが間違っています");
-      return;
-    }
+      if (!res.ok) {
+        setError("社員番号またはパスワードが間違っています");
+        return;
+      }
 
-    const data = await res.json();
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("isLoggedIn", "true"); // ログイン状態を保存
+      const data = await res.json();
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("isLoggedIn", "true");
 
-    // ログイン成功時の処理
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    } else {
-      // デフォルトでダッシュボードに遷移
-      window.location.href = "/dashboard";
+      // ログイン成功時の処理
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("ログインに失敗しました。ネットワーク接続を確認してください。");
     }
   };
 
@@ -56,7 +91,20 @@ export default function Login({ onLoginSuccess }: LoginProps) {     // props追�
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <h1 className="text-2xl font-bold mb-6">GROW Next</h1>
 
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+      {/* 開発環境での情報表示 */}
+      {isDevelopmentMode() && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4 max-w-md">
+          <div className="text-sm">
+            <strong>🚀 開発環境モード</strong>
+            <br />
+            テストアカウント: admin/admin123 または user001/test1234
+            <br />
+            <span className="text-xs">※本番環境では表示されません</span>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">.
         <form onSubmit={handleSubmit}>
 
 
