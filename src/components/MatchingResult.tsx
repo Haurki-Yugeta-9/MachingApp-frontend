@@ -43,7 +43,7 @@ const MatchingJobList: React.FC<Props> = ({ matchedJobs }) => {
                     <div 
                         key={job.id}
                         className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 cursor-pointer hover:shadow-md transition"
-                        onClick={() => router.push(`/?view=chat&jobId=${job.id}`)}
+                        onClick={() => router.push(`/chat?jobId=${job.id}`)}
                     >
                         {/* 求人ヘッダー */}
                         <div className="flex justify-between items-start mb-4">
